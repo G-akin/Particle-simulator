@@ -107,5 +107,4 @@ while run:
             run = False
     #display update              
     pygame.display.update()
-#game end
 pygame.quit()
