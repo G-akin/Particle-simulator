@@ -1,7 +1,6 @@
 #Martial
 import pygame
 pygame.init()
-import time
 clock = pygame.time.Clock()
 import random
 
