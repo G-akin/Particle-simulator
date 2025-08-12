@@ -1,25 +1,14 @@
 #Martial
-#import and initalise player.ygame
 import pygame
 pygame.init()
-
-#import time
 import time
 clock = pygame.time.Clock()
-
-#import math
-import math
-
 import random
 
-#tickrate
 tickrate = 100
-#
 airn=10000
 perfn=500
 
-#gravity
-gravity = 4
 class esprite():
     def __init__(self,etype="No Type",espawn=200,esize=5,floor=500,lwall=0,rwall=700,xspawn=100,yspawn=100,rgb=(90,120,200)):
 ##        xspawn=random.randint(0,700)
@@ -43,7 +32,7 @@ class esprite():
         ydire=random.choice([True,False])
         xmag=random.randint(1,10)
         ymag=random.randint(1,10)
-        #print(xdire)
+
         if xdire==True:
             if self.rect.x>0:
                 self.movee(-xmag,0)
@@ -57,100 +46,9 @@ class esprite():
             if self.rect.y<500:
                 self.movee(0,ymag)
 
-    def collision(self):
-        if self.rect.colliderect(esprite().rect)==True:
-            print("collided",self)
-
-        
-class playersprite():
-    def __init__(self,ptype="No Type",prange=50,pstrength=50,php=50,pspawn=100,psize=40,floor=500,jumpflag=False,jumptimecounter=10,jumph=14,pspeed=0,hv=0):
-        self.php=php
-        prect=pygame.Rect(pspawn,pspawn,psize,psize)
-        self.prect=prect
-        self.ptype=ptype
-        self.prange=prange
-        self.pstrength=pstrength
-        ##self.prect=prect
-        self.x=prect.x
-        self.y=prect.y
-        self.floor=floor
-        self.jumpflag=jumpflag
-        self.jumptimecounter=jumptimecounter
-        self.jumph=jumph
-        self.hv=hv
-        self.pspeed=pspeed
-    def showstats(self):
-        print("Type:",self.ptype ,"/n","Range:",prange,"/n","strength:",pstrength)
- 
-    def drawplayer(self):
-        pygame.draw.rect(screen, (0,150 ,0), self.prect)
-
-    def moveplayer(self,dx,dy):
-        self.prect.y+=dy
-        self.prect.x+=dx
-
-    def fakegravity(self):
-        if self.prect.y < self.floor:
-            self.moveplayer(0,gravity)
-##    def realforce():
-##    def realaccel(self,dhv,dvv):
-    def realgravity(self):
-        if self.prect.y < self.floor-self.hv:
-            g=1
-            self.hv+=g
-            self.moveplayer(0,self.hv)
-        else:
-            self.hv=0
-
-        
-    def jump(self):
-        key = pygame.key.get_pressed()
-        if self.prect.y > 498 and self.jumptimecounter==10:
-            if key[pygame.K_w] == True:
-                self.jumpflag=True                
-        if self.jumpflag==True:
-            self.moveplayer(0,-4*self.jumph)
-            self.jumptimecounter-=1
-
-        if self.jumptimecounter == 0:
-            self.jumpflag=False
-            self.jumptimecounter=10
-    
-    def drawcoords(self):
-        font = pygame.font.SysFont("Arial",36)
-        coords = (self.prect.x, self.prect.y)
-        coords = str(coords)
-        coordtxt = font.render(coords,True, (0, 0, 0))
-        screen.blit(coordtxt,(25,25))
-    #def accelplayer(self,dxv,dyv):
-    def drawhp(self):
-        font = pygame.font.SysFont("Arial",36)
-        disphp = (player1.php)
-        disphp = ("Health: " + str(disphp))
-
-        disphp = font.render(disphp,True, (0, 0, 0))
-        screen.blit(disphp,(25,60))
-    def usercontrol(self):
-        key = pygame.key.get_pressed()
-        if self.x > 0:
-            if key[pygame.K_a] == True:
-                self.moveplayer(-pspeed,0)
-
-    #right    
-        if  self.x < 710:
-            if key[pygame.K_d] == True:
-                self.moveplayer(pspeed,0)
-   
-
-
-##sprite_names = [GlitterGnome, Zapling, PixieFrost, EmberFlare, ShadowWhisk, MysticBubble, SparkleStride, LunarLoom, ThunderTwig, BreezyWisp, StarBloom, AquaDart, FlameFlick, MistyMote, NovaNymph]
-
-
 ent1 = esprite("floobie")
 
 ent2= esprite("refa")
-
-player1 = playersprite("sni",100,75,45,45)       
 
 def generate_objects(count):
     """Generates a list of Item objects."""
@@ -175,7 +73,6 @@ def process_perf(objects1):
     for obj in objects1:
         obj.drawe()
         obj.randommove()
-        obj.collision()
 
 objlist1=generate_perf(perfn)
 
@@ -186,66 +83,23 @@ def process_objects(objects):
     for obj in objects:
         obj.drawe()
         obj.randommove()
-        obj.collision()
       
-###player stats
-pspeed = 10
-
-#enemy stats
-espeed = 0
-ejump = 0 
-ehp = 0
-edmg = 0
-
-#Screen
 SCREEN_W = 750
 SCREEN_H =  600
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-pygame.display.set_caption("Martial")
-# bg = pygame.image.load("Bground1.png").convert()
+pygame.display.set_caption("Diffusion sim")
 
-#Game loop
 run = True
 
 while run :
-    #tickrate
-    clock.tick(tickrate)
-    #blitting bg
-    # screen.blit(bg,(0,0))
     screen.fill((255,255,255))
-    #player sprite drawn
-##    pygame.draw.rect(screen, (0,150 ,0), player)
-    player1.drawplayer()
-    player1.drawcoords()
-    player1.drawhp()
-    #player1.fakegravity()
-    player1.realgravity()
-    player1.jump()
-    player1.usercontrol()
-    ##tests.drawplayer()
-####    ent1.drawe()
-####    ent1.randommove()
+    clock.tick(tickrate)
     process_objects(objlist)
     process_perf(objlist1)
-##    for item in sprite_names:
-##        item.drawe()
-##    key = pygame.key.get_pressed()
-##    if player1.x > 0:
-##        if key[pygame.K_a] == True:
-##            player1.moveplayer(-pspeed,0)
-##
-##    #right    
-##    if  player1.x < 710:
-##        if key[pygame.K_d] == True:
-##            player1.moveplayer(pspeed,0)
-##   
-##
-    #game end
+
     for event in pygame.event.get():
          if event.type == pygame.QUIT:
             run = False
-
-    #display update              
+          
     pygame.display.update()
-#game end
 pygame.quit()
