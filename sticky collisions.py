@@ -2,8 +2,8 @@ import pygame
 pygame.init()
 clock = pygame.time.Clock()
 import random
-genn=10
-psize=20
+genn=100
+psize=5
 #tickrate
 tickrate = 60
 class esprite():
@@ -51,14 +51,13 @@ class esprite():
             # print(self.vel[0])
 
 
-    def bounce(self):
-        pass
+    def sticky_collision(self):
         for other_particle in objlist:
             if other_particle!=self and self.rect.colliderect(other_particle.rect):
                 # print("Collis")
                 sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
-                self.vel=(sigma_vel[0]/2,sigma_vel[1]/2)
-                other_particle.vel=(sigma_vel[0]/2,sigma_vel[1]/2)
+                self.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
                 
 def generate_objects(count):
     # Generates a list of Item objects
@@ -73,7 +72,7 @@ def process_objects(objects):
     for obj in objects:
         obj.drawe()
         obj.randommove()
-        # obj.bounce()
+        obj.sticky_collision()
         obj.wall_bounce()
         obj.vel_move()
 objlist=generate_objects(genn)
