@@ -2,109 +2,102 @@ import pygame
 pygame.init()
 clock = pygame.time.Clock()
 import random
-import math
-genn=1000
-psize=5
+genn=100
+psize=15
 #tickrate
 tickrate = 60
 class esprite():
-    def __init__(self,name,espawn=200,esize=5,floor=500,lwall=0,rwall=700,xspawn=100,yspawn=100,rgb=(90,120,200),xmomentum=0,ymomentum=0):        
+    def __init__(self,espawn=200,esize=5,floor=600,lwall=0,rwall=700,xspawn=100,yspawn=100,rgb=(90,120,200),ceiling=0,):
         self.rgb=rgb
         self.xspawn=xspawn
         self.yspawn=yspawn
         self.esize=esize
         self.rect=pygame.Rect(xspawn,yspawn,esize,esize)
-        self.name=name
-        self.xmomentum=xmomentum
-        self.ymomentum=ymomentum
+        self.vel =[random.randint(-2,2),random.randint(-2,2)]
+        self.restitution=1.1
+        self.floor=floor
+        self.lwall=lwall
+        self.rwall=rwall
+        self.ceiling=ceiling
+        self.collided=False
+
     def drawe(self):
         pygame.draw.rect(screen,(self.rgb), self.rect)
+
     def randommove(self):
-##        self.rect.clamp_ip(0,0,650,650)  
-        self.rect.x+=random.randint(-2,2)
-        self.rect.y+=random.randint(-2,2)
-    def coords(self):
-        return [self.rect.x,self.rect.y]
-    def gridpos(self):
-        return [(math.ceil(self.coords()[0]/100)*1),(math.ceil(self.coords()[1]/100)*1)]
-    def collide(self):
-        return self.rect.colliderect()
-    def momentummove(self):
-        
-        if self.xmomentum>10:
-            self.xmomentum=8
-        if self.ymomentum>10:
-            self.ymomentum=8
-        if (self.rect.x)+(self.xmomentum)>0 and(self.rect.x)+(self.xmomentum)<650:
-            self.rect.move_ip(self.xmomentum,0)
-        if (self.rect.y)+(self.ymomentum)>0 and(self.rect.y)+(self.ymomentum)<650:
-            self.rect.move_ip(0,self.ymomentum)
+        pass
+        # self.rect.clamp_ip(0,0,700,500)   
+        # self.rect.x+=random.randint(-2,2)
+        # self.rect.y+=random.randint(-2,2)
+
+    def vel_move(self):
+        # self.vel.x+=dx
+        # self.vel.y+=dy
+        self.rect.x+=self.vel[0]
+        self.rect.y+=self.vel[1]
+        # self.rect.clamp_ip(0,0,700,500) 
+            
+    def wall_bounce(self):
+        if self.rect.x<self.lwall:
+            self.vel[0]=abs(self.vel[0])
+            # print(self.vel[0])
+        if self.rect.x>self.rwall:
+            self.vel[0]=-abs(self.vel[0])
+            # print(self.vel[0])
+        if self.rect.y<self.ceiling:
+            self.vel[1]=abs(self.vel[1])
+            # print(self.vel[1])
+        if self.rect.y>self.floor:
+            self.vel[1]=-abs(self.vel[1])
+            # print(self.vel[0])
+
+    def sticky_collision(self):
+        for other_particle in objlist:
+            if other_particle!=self and self.rect.colliderect(other_particle.rect) and self.collided==False and other_particle.collided==False:
+                # print("Collis")
+                sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
+                self.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                self.collided=True
+            else:
+                self.collided=False
+
+    def run(self):
+        # self.collided=False
+        self.drawe()
+        self.randommove()
+        self.sticky_collision()
+        self.wall_bounce()
+        self.vel_move()
+                
 def generate_objects(count):
-    objects = []
+    # Generates a list of Item objects
+    particles = []
     for i in range(count):
         name = f"Object_{i+1}"
-        objects.append(esprite(name,name,psize,500,0,700,random.randint(0,650),random.randint(0,650),(2*random.randint(0,125),2*random.randint(0,125),2*random.randint(0,125)),0,0))
-    return objects
+        particles.append(esprite(name,psize,500,0,700,random.randint(0,700),random.randint(0,500),(2*random.randint(0,125),2*random.randint(0,125),2*random.randint(0,125))))
+    return particles
 
-objcoords=[]
 def process_objects(objects):
-    xbins=[[],[],[],[],[],[],[],[]]
-    ybins=[[],[],[],[],[],[],[],[]]
-    orgbinarr=[]
-    shquads=[]
-    #organised bins
-    for xb in range(len(xbins)+1):
-        for yb in range(len(ybins)+1):
-
-            orgbinarr.append((xb,yb))
-            shquads.append([])
-##            if xb*yb>63:
-##                print(orgbinarr,xb*yb)
-##    print(orgbinarr)
+    # Calls the sub-procedure for each object
     for obj in objects:
-        obj.drawe()
-##        obj.randommove()
-        obj.momentummove()
-        gridtuple=tuple(obj.gridpos())
-        collision=False
-## Adds objects to their quad bin
-        for quad in orgbinarr:
-            if gridtuple==quad:
-                shquads[orgbinarr.index(quad)].append(obj)
-##    print(shquads)
-        for otherobj in shquads[orgbinarr.index(gridtuple)]:
-            if otherobj!=obj:
-                if obj.rect.colliderect(otherobj)== True:
-                    collision==True
-                    
-                    negy= random.randint(0,1)
-                    if negy==0:
-                        obj.ymomentum+=-random.randint(1,5)
-                    negx=neg= random.randint(0,1)
-                    if negx==0:
-                        obj.xmomentum+=-random.randint(1,5)
-
-            if obj.rect.x<0+psize or (obj.rect.x+psize)>650:
-                obj.xmomentum=-obj.xmomentum
-##                    print("collison",obj.name)
-            if obj.rect.y<0+psize or (obj.rect.y+psize)>650:
-                obj.ymomentum=-obj.ymomentum
-                    
+        obj.run()
 objlist=generate_objects(genn)
 
-SCREEN_W = 700
-SCREEN_H = 700
+SCREEN_W = 750
+SCREEN_H =  600
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
 
 run= True
 while run:
     clock.tick(tickrate)
-    screen.fill((0,0,0))    
+    screen.fill((255,255,255))    
     process_objects(objlist)
-    #print(clock.get_fps())   
+    # print(clock.get_fps())
     for event in pygame.event.get():
          if event.type == pygame.QUIT:
             run = False
     #display update              
     pygame.display.update()
+#game end
 pygame.quit()
