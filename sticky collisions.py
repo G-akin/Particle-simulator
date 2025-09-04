@@ -33,11 +33,11 @@ class esprite():
     def bounce(self):
         pass
         for other_particle in objlist:
-            if self.rect.colliderect(other_particle.rect):
-                print("Collis")
+            if self.rect.colliderect(other_particle.rect) and other_particle!=self:
+                # print("Collis")
                 sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
                 self.vel=(sigma_vel[0]/2,sigma_vel[1]/2)
-            #     other_particle.vel=(self.vel[0]/2,self.vel[1]/2)
+                other_particle.vel=(sigma_vel[0]/2,sigma_vel[1]/2)
                 
 def generate_objects(count):
     """Generates a list of Item objects."""
