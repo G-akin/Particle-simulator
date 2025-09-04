@@ -3,7 +3,7 @@ pygame.init()
 clock = pygame.time.Clock()
 import random
 genn=100
-psize=5
+psize=15
 #tickrate
 tickrate = 60
 class esprite():
@@ -19,7 +19,8 @@ class esprite():
         self.lwall=lwall
         self.rwall=rwall
         self.ceiling=ceiling
-        
+        self.collided=False
+
     def drawe(self):
         pygame.draw.rect(screen,(self.rgb), self.rect)
 
@@ -50,14 +51,24 @@ class esprite():
             self.vel[1]=-abs(self.vel[1])
             # print(self.vel[0])
 
-
     def sticky_collision(self):
         for other_particle in objlist:
-            if other_particle!=self and self.rect.colliderect(other_particle.rect):
+            if other_particle!=self and self.rect.colliderect(other_particle.rect) and self.collided==False and other_particle.collided==False:
                 # print("Collis")
                 sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
                 self.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
-                other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                # other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                self.collided=True
+            else:
+                self.collided=False
+
+    def run(self):
+        # self.collided=False
+        self.drawe()
+        self.randommove()
+        self.sticky_collision()
+        self.wall_bounce()
+        self.vel_move()
                 
 def generate_objects(count):
     # Generates a list of Item objects
@@ -70,11 +81,7 @@ def generate_objects(count):
 def process_objects(objects):
     # Calls the sub-procedure for each object
     for obj in objects:
-        obj.drawe()
-        obj.randommove()
-        obj.sticky_collision()
-        obj.wall_bounce()
-        obj.vel_move()
+        obj.run()
 objlist=generate_objects(genn)
 
 SCREEN_W = 750
