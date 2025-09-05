@@ -1,4 +1,3 @@
-import math
 import pygame
 pygame.init()
 clock = pygame.time.Clock()
@@ -12,20 +11,20 @@ class esprite():
     def __init__(self,esize=(5,5),espawn=(100,100),
                  floor=550,ceiling=0,
                  lwall=0,rwall=650,
-                 rgb=(90,120,200)):
+                 rgb=(90,120,200),start_vel=[random.randint(-2,2),random.randint(-2,2)]):
         self.rgb=rgb
         # self.xspawn=xspawn
         # self.yspawn=yspawn
         self.esize=esize
         self.rect=pygame.Rect(espawn[0],espawn[1],esize[0],esize[1])
-        self.vel =[random.randint(-2,2),random.randint(-2,2)]
+        self.vel =start_vel
         self.restitution=1.0
         self.floor=floor
         self.lwall=lwall
         self.rwall=rwall
         self.ceiling=ceiling
         self.collided=False
-        self.g= 0.5
+        self.g= 0.0
     def drawe(self):
         pygame.draw.rect(screen,(self.rgb), self.rect)
 
@@ -61,14 +60,28 @@ class esprite():
         if self.rect.y>self.floor:
             self.vel[1]= -abs(self.vel[1])*self.restitution
             # self.vel[1]=-math.sqrt(self.vel[1]**2)*self.restitution
-            print(self.vel[0])
+            # print(self.vel[0])
 
-    def sticky_collision(self):
+    def particle_collision(self):
         for other_particle in objlist:
             if other_particle!=self and self.rect.colliderect(other_particle.rect) and self.collided==False and other_particle.collided==False:
-                # print("Collis")
+                print("Collis")
+                if self.rect.x>other_particle.rect.x:
+                    self.rect.x+=self.esize[0]-(self.rect.x-other_particle.rect.x)
+                    other_particle.rect.x-=self.esize[0]-(self.rect.x-other_particle.rect.x)
+                
+                elif self.rect.x<other_particle.rect.x:
+                    self.rect.x+=self.esize[0]-(self.rect.x-other_particle.rect.x)
+                    other_particle.rect.x-=self.esize[0]-(self.rect.x-other_particle.rect.x)
+
+                # elif self.rect.x<other_particle.rect.x:
+                #     self.rect.x+=self.esize[0]-(self.rect.x-other_particle.rect.x)
+                #     other_particle.rect.x
+
+                    # self.rect.x+=self.esize[0]/2
+                    # other_particle.rect.x-=self.esize[0]/2
                 sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
-                self.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+                self.vel=[-sigma_vel[0]/2,-sigma_vel[1]/2]
                 # other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
                 self.collided=True
             else:
@@ -78,7 +91,7 @@ class esprite():
         # self.collided=False
         # self.drawe()
         # self.randommove()
-##        self.sticky_collision()
+        self.particle_collision()
         # self.wall_bounce()
         self.gravity()
         self.wall_bounce()
@@ -94,10 +107,12 @@ def generate_objects(count):
         rwall=650
         floor=550
         ceiling=0
+        vel_mag_range=4
         name = f"Object_{i+1}"
         name =esprite(esize=psize,espawn=(random.randint(lwall,rwall),random.randint(ceiling,floor)),
                       floor=floor,ceiling=ceiling,lwall=lwall,rwall=rwall,
-                      rgb=(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+                      rgb=(random.randint(0,255),random.randint(0,255),random.randint(0,255)),
+                      start_vel=[random.randint(-vel_mag_range,vel_mag_range),random.randint(-vel_mag_range,vel_mag_range)])
         particles.append(name)
         
 
