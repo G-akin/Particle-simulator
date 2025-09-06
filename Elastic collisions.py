@@ -2,8 +2,8 @@ import pygame
 pygame.init()
 clock = pygame.time.Clock()
 import random
-genn=100
-sqsize=15
+genn=10
+sqsize=30
 psize=(sqsize,sqsize)
 #tickrate
 tickrate = 60
@@ -24,7 +24,7 @@ class esprite():
         self.rwall=rwall
         self.ceiling=ceiling
         self.collided=False
-        self.g= 0.0
+        self.g= 0.6
     def drawe(self):
         pygame.draw.rect(screen,(self.rgb), self.rect)
 
@@ -67,29 +67,47 @@ class esprite():
             if other_particle!=self and self.rect.colliderect(other_particle.rect) and self.collided==False and other_particle.collided==False:
                 # print("Collis")
 
-                sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
-                self.vel=[-sigma_vel[0]/2,-sigma_vel[1]/2]
-                other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
-
-                if self.rect.x>other_particle.rect.x:
-                    self.rect.x+=(self.rect.x-other_particle.rect.x)
-                    other_particle.rect.x-=(self.rect.x-other_particle.rect.x)
+                # xdiff=self.rect.x-other_particle.rect.x+psize[0]
+                # ydiff=self.rect.y-other_particle.rect.y+psize[1]
+                #    
+                if self.rect.x>other_particle.rect.x+psize[0]:
+                    self.rect.x+=1
+                    other_particle.rect.x-=1
 
                 elif self.rect.x<other_particle.rect.x:
-                    self.rect.x-=(self.rect.x-other_particle.rect.x)
-                    other_particle.rect.x+=(self.rect.x-other_particle.rect.x)
+                    self.rect.x-=1
+                    other_particle.rect.x+=1
 
                 if self.rect.y>other_particle.rect.y:
-                    self.rect.y+=(self.rect.y-other_particle.rect.y)
-                    other_particle.rect.y-=(self.rect.y-other_particle.rect.y)
+                    self.rect.y+=1
+                    other_particle.rect.y-=1
 
                 elif self.rect.y<other_particle.rect.y:
-                    self.rect.y-=(self.rect.y-other_particle.rect.y)
-                    other_particle.rect.y+=(self.rect.x-other_particle.rect.y)
+                    self.rect.y-=1
+                    other_particle.rect.y+=1
 
-                    # self.rect.x+=self.esize[0]/2
-                    # other_particle.rect.x-=self.esize[0]/2
+                # if self.rect.x>other_particle.rect.x:
+                #     self.rect.x+=(self.rect.x-other_particle.rect.x)
+                #     other_particle.rect.x-=(self.rect.x-other_particle.rect.x)
+
+                # elif self.rect.x<other_particle.rect.x:
+                #     self.rect.x-=(self.rect.x-other_particle.rect.x)
+                #     other_particle.rect.x+=(self.rect.x-other_particle.rect.x)
+
+                # if self.rect.y>other_particle.rect.y:
+                #     self.rect.y+=(self.rect.y-other_particle.rect.y)
+                #     other_particle.rect.y-=(self.rect.y-other_particle.rect.y)
+
+                # elif self.rect.y<other_particle.rect.y:
+                #     self.rect.y-=(self.rect.y-other_particle.rect.y)
+                #     other_particle.rect.y+=(self.rect.x-other_particle.rect.y)
+
+                # sigma_vel=(self.vel[0]+other_particle.vel[0],self.vel[1]+other_particle.vel[1]) #*self.restitution
+                # self.vel=[-sigma_vel[0]/2,-sigma_vel[1]/2]
+                # other_particle.vel=[sigma_vel[0]/2,sigma_vel[1]/2]
+
                 self.collided=True
+                other_particle.collided=True
             else:
                 self.collided=False
 
@@ -98,8 +116,8 @@ class esprite():
         # self.drawe()
         # self.randommove()
         self.particle_collision()
-        # self.wall_bounce()
-        self.gravity()
+        self.wall_bounce()
+        # self.gravity()
         self.wall_bounce()
         self.vel_move()
         self.drawe()
